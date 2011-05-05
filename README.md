@@ -1,20 +1,14 @@
-# NetLogo sound extension
+# NetLogo unit test extension
 
-This package contains the NetLogo sound extension.
+This package contains the NetLogo unit extension.
 
 ## Using
 
-The sound extension is pre-installed in NetLogo. For instructions on using sound in your model, or for more information about NetLogo extensions, see the NetLogo User Manual.
-
-For models that use this extension, see Code Examples/Sound in the models library.
+TODO
 
 ## Building
 
-Use the NETLOGO environment variable to tell the Makefile which NetLogo.jar to compile against.  For example:
-
-    NETLOGO=/Applications/NetLogo\\\ 5.0beta2 make
-
-If compilation succeeds, `sound.jar` will be created.
+TODO
 
 ## Terms of Use
 
