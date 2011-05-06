@@ -13,5 +13,8 @@ class TestExtensionProject(info: ProjectInfo) extends DefaultProject(info) {
 		"Extension-Name" -> "test",
 		"Class-Manager" -> "UnitTestExtension",
 		"NetLogo-Extension-API-Version" -> "5.0"))
+
+  val netlogo = "NetLogo" % "NetLogo" % "5.0beta2" from
+    "http://ccl.northwestern.edu/netlogo/5.0beta2/NetLogo.jar"
 }
 
