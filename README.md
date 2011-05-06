@@ -12,7 +12,7 @@ TODO
 
 ## Terms of Use
 
-All contents © 2004-2011 Uri Wilensky.
+All contents © 2011 Uri Wilensky.
 
 The contents of this package may be freely copied, distributed, altered, or otherwise used by anyone for any legal purpose.
 
