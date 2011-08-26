@@ -1,107 +1,60 @@
-import org.nlogo.api._
-import org.nlogo.api.Syntax._
+import org.nlogo.api.{ DefaultClassManager, PrimitiveManager,
+                       DefaultCommand, DefaultReporter,
+                       Syntax, Context, Argument, LogoException }
 
 // extension
 class TestExtension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {
-    manager.addPrimitive("add", new AddTest)
-    manager.addPrimitive("setup", new TestSetup)
-    manager.addPrimitive("run", new RunTests)
-    manager.addPrimitive("summary", new TestSummary)
-    manager.addPrimitive("full-report", new FullTestReport)
+    manager.addPrimitive("setup", new SetupCommand)
+    manager.addPrimitive("add", new AddCommand)
+    manager.addPrimitive("run", new RunCommand)
+    manager.addPrimitive("summary", new SummaryReporter)
+    manager.addPrimitive("details", new DetailsReporter)
   }
 }
 
 // primitives
-class TestSetup extends DefaultCommand {
-  override def getSyntax = commandSyntax(Array(CommandTaskType))
-  def perform(args: Array[Argument], context: Context){
+class SetupCommand extends DefaultCommand {
+  override def getSyntax =
+    Syntax.commandSyntax(Array(Syntax.CommandTaskType))
+  def perform(args: Array[Argument], context: Context) {
     // could possibly check to see if there is a setup method here already...
-    TestExtension.setup = Some(args(0).getCommandTask)
+    Tester.setup = Some(args(0).getCommandTask)
   }
 }
 
-class AddTest extends DefaultCommand {
-  override def getSyntax = commandSyntax(Array(StringType, CommandTaskType, ReporterTaskType, WildcardType))
-  def perform(args: Array[Argument], context: Context) = {
-    TestExtension.addTest(Test(args(0).getString,
-                               args(1).getCommandTask,
-                               args(2).getReporterTask,
-                               args(3).get))
+class AddCommand extends DefaultCommand {
+  override def getSyntax =
+    Syntax.commandSyntax(
+      Array(Syntax.StringType, Syntax.CommandTaskType,
+            Syntax.ReporterTaskType, Syntax.WildcardType))
+  def perform(args: Array[Argument], context: Context) {
+    Tester.addTest(
+      Test(args(0).getString,
+           args(1).getCommandTask,
+           args(2).getReporterTask,
+           args(3).get))
   }
 }
 
-class RunTests extends DefaultCommand {
-  override def getSyntax = commandSyntax(Array())
-  def perform(args: Array[Argument], context: Context){ TestExtension.run(context) }
-}
-
-class TestSummary extends DefaultReporter {
-  override def getSyntax = reporterSyntax(Array(), StringType)
-  def report(args: Array[Argument], context: Context) = TestExtension.summaryWithFailsAndErrors
-}
-
-class FullTestReport extends DefaultReporter {
-  override def getSyntax = reporterSyntax(Array(), StringType)
-  def report(args: Array[Argument], context: Context) = TestExtension.fullReport
-}
-
-// main object
-object TestExtension {
-  val tests = collection.mutable.ListBuffer[Test]()
-  var setup: Option[CommandTask] = None
-  var results: Iterable[TestResult] = Nil
-  def addTest(t: Test){ tests += t }
-  def run(context:Context)  {
-    results = tests.map(t => t.run(context))
-    clear()
+class RunCommand extends DefaultCommand {
+  override def getSyntax =
+    Syntax.commandSyntax(Array())
+  def perform(args: Array[Argument], context: Context) {
+    Tester.run(context)
   }
-  private def clear(){ tests.clear(); setup = None }
-  def successes = results.collect{ case t: Pass => t }
-  def failures = results.collect{ case t: Fail => t }
-  def errors = results.collect{ case t: Error => t }
-  def simpleSummary = {
-    (if(failures.size + errors.size == 0) "Test Run Passed" else "Test Run Failed") + " - " +
-    "Total "+results.size+", Failed "+failures.size+", Errors "+errors.size+", Passed "+successes.size
-  }
-  def summaryWithFailsAndErrors = {
-    simpleSummary +
-    (if(failures.size>0) ("\n"+failures.map(_.report).mkString("\n")) else "") +
-    (if(errors.size>0) ("\n"+errors.map(_.report).mkString("\n")) else "")
-  }
-  def fullReport = simpleSummary + "\n" + results.map(_.report).mkString("\n")
 }
 
-// helpers
-case class Test(name:String, command: CommandTask, reporter: ReporterTask, expectedResult:AnyRef){
-  import org.nlogo.nvm
-  def run(c: Context) = {
-    val context = c.asInstanceOf[nvm.ExtensionContext].nvmContext
-    val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
-    try{
-      workspace.clearAll()
-      TestExtension.setup.foreach(_.asInstanceOf[nvm.CommandLambda].perform(context, Array()))
-      command.asInstanceOf[nvm.CommandLambda].perform(context, Array())
-      val actualResult = reporter.asInstanceOf[nvm.ReporterLambda].report(context, Array())
-      if(actualResult == expectedResult) pass else fail(actualResult, expectedResult)
-    }
-    catch { case e: LogoException => err(e) }
-  }
-  def pass = Pass(this)
-  def fail(actual:Any, expected:Any) = Fail(this, "expected: " + expected + " but got: " + actual)
-  def err(t: LogoException) = Error(this, t)
+class SummaryReporter extends DefaultReporter {
+  override def getSyntax =
+    Syntax.reporterSyntax(Array(), Syntax.StringType)
+  def report(args: Array[Argument], context: Context) =
+    Tester.summary
 }
 
-trait TestResult {
-  val test: Test
-  def report: String
-}
-case class Pass(test:Test) extends TestResult{
-  def report: String = "PASS '" + test.name + "'"
-}
-case class Fail(test:Test, reason:String) extends TestResult{
-  def report: String = "FAIL '" + test.name + "' " + reason
-}
-case class Error(test:Test, e:LogoException) extends TestResult{
-  def report: String = "ERROR '" + test.name + "' " + e.getMessage
+class DetailsReporter extends DefaultReporter {
+  override def getSyntax =
+    Syntax.reporterSyntax(Array(), Syntax.StringType)
+  def report(args: Array[Argument], context: Context) =
+    Tester.details
 }
