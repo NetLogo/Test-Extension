@@ -26,7 +26,7 @@ class UnitTestExtension extends DefaultClassManager {
 
 // primitives
 class TestSetup extends DefaultCommand {
-  override def getSyntax = commandSyntax(Array(TYPE_COMMAND_LAMBDA))
+  override def getSyntax = commandSyntax(Array(CommandTaskType))
   def perform(args: Array[Argument], context: Context){
     // could possibly check to see if there is a setup method here already...
     UnitTestExtension.setup = Some(args(0).get.asInstanceOf[CommandLambda])
@@ -34,7 +34,7 @@ class TestSetup extends DefaultCommand {
 }
 
 class AddTest extends DefaultCommand {
-  override def getSyntax = commandSyntax(Array(TYPE_STRING, TYPE_COMMAND_LAMBDA, TYPE_REPORTER_LAMBDA, TYPE_WILDCARD))
+  override def getSyntax = commandSyntax(Array(StringType, CommandTaskType, ReporterTaskType, WildcardType))
   def perform(args: Array[Argument], context: Context) = {
     def get[T](index:Int) = args(index).get.asInstanceOf[T]
     UnitTestExtension.addTest(Test(get[String](0),get[CommandLambda](1),get[ReporterLambda](2),get[AnyRef](3)))
@@ -47,12 +47,12 @@ class RunUnitTests extends DefaultCommand {
 }
 
 class TestSummary extends DefaultReporter {
-  override def getSyntax = reporterSyntax(Array(), TYPE_STRING)
+  override def getSyntax = reporterSyntax(Array(), StringType)
   def report(args: Array[Argument], context: Context) = UnitTestExtension.summaryWithFailsAndErrors
 }
 
 class FullTestReport extends DefaultReporter {
-  override def getSyntax = reporterSyntax(Array(), TYPE_STRING)
+  override def getSyntax = reporterSyntax(Array(), StringType)
   def report(args: Array[Argument], context: Context) = UnitTestExtension.fullReport
 }
 

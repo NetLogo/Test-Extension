@@ -8,7 +8,11 @@ TODO
 
 ## Building
 
-TODO
+Use the NETLOGO environment variable to point to your NetLogo directory (containing NetLogo.jar) and SCALA_HOME to point to your Scala 2.9.1 installation.  For example:
+
+    NETLOGO=/Applications/NetLogo\\\ 5.0 SCALA_HOME=/usr/local/scala-2.9.1 make
+
+If compilation succeeds, `test.jar` will be created.
 
 ## Terms of Use
 
