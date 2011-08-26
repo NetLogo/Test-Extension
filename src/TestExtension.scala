@@ -39,7 +39,7 @@ class AddCommand extends DefaultCommand {
 
 class RunCommand extends DefaultCommand {
   override def getSyntax =
-    Syntax.commandSyntax(Array())
+    Syntax.commandSyntax()
   def perform(args: Array[Argument], context: Context) {
     Tester.run(context)
   }
@@ -47,14 +47,14 @@ class RunCommand extends DefaultCommand {
 
 class SummaryReporter extends DefaultReporter {
   override def getSyntax =
-    Syntax.reporterSyntax(Array(), Syntax.StringType)
+    Syntax.reporterSyntax(Syntax.StringType)
   def report(args: Array[Argument], context: Context) =
     Tester.summary
 }
 
 class DetailsReporter extends DefaultReporter {
   override def getSyntax =
-    Syntax.reporterSyntax(Array(), Syntax.StringType)
+    Syntax.reporterSyntax(Syntax.StringType)
   def report(args: Array[Argument], context: Context) =
     Tester.details
 }
