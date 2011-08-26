@@ -1,6 +1,5 @@
 import org.nlogo.api._
 import org.nlogo.api.Syntax._
-import org.nlogo.nvm.{ExtensionContext, ReporterLambda, CommandLambda}
 
 /**
 to run-tests
@@ -29,15 +28,17 @@ class TestSetup extends DefaultCommand {
   override def getSyntax = commandSyntax(Array(CommandTaskType))
   def perform(args: Array[Argument], context: Context){
     // could possibly check to see if there is a setup method here already...
-    TestExtension.setup = Some(args(0).get.asInstanceOf[CommandLambda])
+    TestExtension.setup = Some(args(0).getCommandTask)
   }
 }
 
 class AddTest extends DefaultCommand {
   override def getSyntax = commandSyntax(Array(StringType, CommandTaskType, ReporterTaskType, WildcardType))
   def perform(args: Array[Argument], context: Context) = {
-    def get[T](index:Int) = args(index).get.asInstanceOf[T]
-    TestExtension.addTest(Test(get[String](0),get[CommandLambda](1),get[ReporterLambda](2),get[AnyRef](3)))
+    TestExtension.addTest(Test(args(0).getString,
+                               args(1).getCommandTask,
+                               args(2).getReporterTask,
+                               args(3).get))
   }
 }
 
@@ -59,7 +60,7 @@ class FullTestReport extends DefaultReporter {
 // main object
 object TestExtension {
   val tests = collection.mutable.ListBuffer[Test]()
-  var setup: Option[CommandLambda] = None
+  var setup: Option[CommandTask] = None
   var results: Iterable[TestResult] = Nil
   def addTest(t: Test){ tests += t }
   def run(context:Context)  {
@@ -83,15 +84,16 @@ object TestExtension {
 }
 
 // helpers
-case class Test(name:String, command:CommandLambda, reporter: ReporterLambda, expectedResult:AnyRef){
+case class Test(name:String, command: CommandTask, reporter: ReporterTask, expectedResult:AnyRef){
+  import org.nlogo.nvm
   def run(c: Context) = {
-    val context = c.asInstanceOf[ExtensionContext]
-    val workspace = context.workspace
+    val context = c.asInstanceOf[nvm.ExtensionContext].nvmContext
+    val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
     try{
       workspace.clearAll()
-      TestExtension.setup.foreach(_.perform(context.nvmContext, Array()))
-      command.perform(context.nvmContext, Array())
-      val actualResult = reporter.report(context.nvmContext, Array())
+      TestExtension.setup.foreach(_.asInstanceOf[nvm.CommandLambda].perform(context, Array()))
+      command.asInstanceOf[nvm.CommandLambda].perform(context, Array())
+      val actualResult = reporter.asInstanceOf[nvm.ReporterLambda].report(context, Array())
       if(actualResult == expectedResult) pass else fail(actualResult, expectedResult)
     }
     catch { case e: LogoException => err(e) }
