@@ -4,8 +4,8 @@ import org.nlogo.api.Syntax._
 /**
 to run-tests
   test:setup [ crt 5 ]
-  test:add [ crt 7 ] [ count turtles ] 12
-  test:add [] [ count turtles ] 5
+  test:add "make" [ crt 7 ] [count turtles] 12
+  test:add "count" [ ] [count turtles] 5
   test:run
   print test:summary
   print test:full-report
