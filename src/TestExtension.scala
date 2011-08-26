@@ -1,17 +1,6 @@
 import org.nlogo.api._
 import org.nlogo.api.Syntax._
 
-/**
-to run-tests
-  test:setup [ crt 5 ]
-  test:add "make" [ crt 7 ] [count turtles] 12
-  test:add "count" [ ] [count turtles] 5
-  test:run
-  print test:summary
-  print test:full-report
-end
- */
-
 // extension
 class TestExtension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {

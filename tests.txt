@@ -1,3 +1,12 @@
+tests-succeed
+  extensions [test]
+  O> test:setup [ crt 5 ]
+  O> test:add "make" [ crt 7 ] [count turtles] 12
+  O> test:add "count" [ ] [count turtles] 5
+  O> test:run
+  test:summary => "Test Run Passed - Total 2, Failed 0, Errors 0, Passed 2"
+  test:full-report => "Test Run Passed - Total 2, Failed 0, Errors 0, Passed 2\nPASS 'make'\nPASS 'count'"
+
 error-in-command-task-1
   extensions [test]
   to-report zero report 0 end
