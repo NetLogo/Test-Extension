@@ -1,6 +1,6 @@
-# NetLogo unit test extension
+# NetLogo test extension
 
-This package contains the NetLogo unit extension.
+This package contains the NetLogo test extension, which lets you define and run unit tests for NetLogo code.
 
 ## Using
 

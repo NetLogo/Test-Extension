@@ -72,8 +72,8 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UnitTestExtension.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/UnitTestExtension.scala">
+      <file leaf-file-name="TestExtension.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/TestExtension.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="11" selection-start="11" selection-end="11" vertical-scroll-proportion="0.0">
               <folding />
@@ -315,7 +315,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/UnitTestExtension.scala">
+    <entry file="file://$PROJECT_DIR$/src/TestExtension.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="11" selection-start="11" selection-end="11" vertical-scroll-proportion="0.0">
           <folding />

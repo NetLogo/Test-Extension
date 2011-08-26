@@ -11,7 +11,7 @@ class TestExtensionProject(info: ProjectInfo) extends DefaultProject(info) {
 	ManifestAttributes(
 		"Manifest-Version" -> "1.0",
 		"Extension-Name" -> "test",
-		"Class-Manager" -> "UnitTestExtension",
+		"Class-Manager" -> "TestExtension",
 		"NetLogo-Extension-API-Version" -> "5.0"))
 
   val netlogo = "NetLogo" % "NetLogo" % "5.0beta4" from

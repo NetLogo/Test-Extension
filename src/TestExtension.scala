@@ -14,11 +14,11 @@ end
  */
 
 // extension
-class UnitTestExtension extends DefaultClassManager {
+class TestExtension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {
     manager.addPrimitive("add", new AddTest)
     manager.addPrimitive("setup", new TestSetup)
-    manager.addPrimitive("run", new RunUnitTests)
+    manager.addPrimitive("run", new RunTests)
     manager.addPrimitive("summary", new TestSummary)
     manager.addPrimitive("full-report", new FullTestReport)
   }
@@ -29,7 +29,7 @@ class TestSetup extends DefaultCommand {
   override def getSyntax = commandSyntax(Array(CommandTaskType))
   def perform(args: Array[Argument], context: Context){
     // could possibly check to see if there is a setup method here already...
-    UnitTestExtension.setup = Some(args(0).get.asInstanceOf[CommandLambda])
+    TestExtension.setup = Some(args(0).get.asInstanceOf[CommandLambda])
   }
 }
 
@@ -37,27 +37,27 @@ class AddTest extends DefaultCommand {
   override def getSyntax = commandSyntax(Array(StringType, CommandTaskType, ReporterTaskType, WildcardType))
   def perform(args: Array[Argument], context: Context) = {
     def get[T](index:Int) = args(index).get.asInstanceOf[T]
-    UnitTestExtension.addTest(Test(get[String](0),get[CommandLambda](1),get[ReporterLambda](2),get[AnyRef](3)))
+    TestExtension.addTest(Test(get[String](0),get[CommandLambda](1),get[ReporterLambda](2),get[AnyRef](3)))
   }
 }
 
-class RunUnitTests extends DefaultCommand {
+class RunTests extends DefaultCommand {
   override def getSyntax = commandSyntax(Array())
-  def perform(args: Array[Argument], context: Context){ UnitTestExtension.run(context) }
+  def perform(args: Array[Argument], context: Context){ TestExtension.run(context) }
 }
 
 class TestSummary extends DefaultReporter {
   override def getSyntax = reporterSyntax(Array(), StringType)
-  def report(args: Array[Argument], context: Context) = UnitTestExtension.summaryWithFailsAndErrors
+  def report(args: Array[Argument], context: Context) = TestExtension.summaryWithFailsAndErrors
 }
 
 class FullTestReport extends DefaultReporter {
   override def getSyntax = reporterSyntax(Array(), StringType)
-  def report(args: Array[Argument], context: Context) = UnitTestExtension.fullReport
+  def report(args: Array[Argument], context: Context) = TestExtension.fullReport
 }
 
 // main object
-object UnitTestExtension {
+object TestExtension {
   val tests = collection.mutable.ListBuffer[Test]()
   var setup: Option[CommandLambda] = None
   var results: Iterable[TestResult] = Nil
@@ -89,7 +89,7 @@ case class Test(name:String, command:CommandLambda, reporter: ReporterLambda, ex
     val workspace = context.workspace
     try{
       workspace.clearAll()
-      UnitTestExtension.setup.foreach(_.perform(context.nvmContext, Array()))
+      TestExtension.setup.foreach(_.perform(context.nvmContext, Array()))
       command.perform(context.nvmContext, Array())
       val actualResult = reporter.report(context.nvmContext, Array())
       if(actualResult == expectedResult) pass else fail(actualResult, expectedResult)
