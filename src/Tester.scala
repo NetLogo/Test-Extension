@@ -33,9 +33,9 @@ case class Test(name: String, command: CommandTask, reporter: ReporterTask, expe
     val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
     try {
       workspace.clearAll()
-      Tester.setup.foreach(_.asInstanceOf[nvm.CommandLambda].perform(context, Array()))
-      command.asInstanceOf[nvm.CommandLambda].perform(context, Array())
-      val actualResult = reporter.asInstanceOf[nvm.ReporterLambda].report(context, Array())
+      Tester.setup.foreach(_.asInstanceOf[nvm.CommandTask].perform(context, Array()))
+      command.asInstanceOf[nvm.CommandTask].perform(context, Array())
+      val actualResult = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
       if(actualResult == expectedResult) pass else fail(actualResult, expectedResult)
     }
     catch {
