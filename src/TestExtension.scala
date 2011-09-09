@@ -8,6 +8,7 @@ class TestExtension extends DefaultClassManager {
     manager.addPrimitive("setup", new SetupCommand)
     manager.addPrimitive("add", new AddCommand)
     manager.addPrimitive("run", new RunCommand)
+    manager.addPrimitive("clear", new ClearCommand)
     manager.addPrimitive("summary", new SummaryReporter)
     manager.addPrimitive("details", new DetailsReporter)
   }
@@ -42,6 +43,14 @@ class RunCommand extends DefaultCommand {
     Syntax.commandSyntax()
   def perform(args: Array[Argument], context: Context) {
     Tester.run(context)
+  }
+}
+
+class ClearCommand extends DefaultCommand {
+  override def getSyntax =
+    Syntax.commandSyntax()
+  def perform(args: Array[Argument], context: Context) {
+    Tester.clear()
   }
 }
 

@@ -6,11 +6,10 @@ object Tester {
   var setup: Option[CommandTask] = None
   var results: Iterable[TestResult] = Nil
   def addTest(t: Test) { tests += t }
-  def run(context: Context)  {
+  def run(context: Context) {
     results = tests.map(t => t.run(context))
-    clear()
   }
-  private def clear() { tests.clear(); setup = None }
+  def clear() { tests.clear(); setup = None }
   def successes = results.collect{ case t: Pass => t }
   def failures = results.collect{ case t: Failure => t }
   def errors = results.collect{ case t: Error => t }
