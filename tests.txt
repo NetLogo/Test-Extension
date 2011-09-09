@@ -27,7 +27,7 @@ test-fails
 
 tests-succeed
   extensions [test]
-  O> test:setup [ crt 5 ]
+  O> test:setup [ ca crt 5 ]
   O> test:add "make" [ crt 7 ] [count turtles] 12
   O> test:add "count" [ ] [count turtles] 5
   O> test:run

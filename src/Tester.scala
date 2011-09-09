@@ -45,8 +45,6 @@ class Results(results: Seq[TestResult]) {
 // helpers
 case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
   def run(context: Context): TestResult = {
-    context.asInstanceOf[org.nlogo.nvm.ExtensionContext]
-      .workspace.clearAll()
     try {
       for(setup <- Tester.setup)
         setup.perform(context, Array())
