@@ -12,7 +12,7 @@ object Tester {
   }
   private def clear() { tests.clear(); setup = None }
   def successes = results.collect{ case t: Pass => t }
-  def failures = results.collect{ case t: Fail => t }
+  def failures = results.collect{ case t: Failure => t }
   def errors = results.collect{ case t: Error => t }
   def simpleSummary =
     "Test Run " +
@@ -24,8 +24,8 @@ object Tester {
     ", Passed " + successes.size
   def summary =
     simpleSummary +
-    (if(failures.size>0) ("\n"+failures.map(_.report).mkString("\n")) else "") +
-    (if(errors.size>0) ("\n"+errors.map(_.report).mkString("\n")) else "")
+    (if(failures.nonEmpty) ("\n"+failures.map(_.report).mkString("\n")) else "") +
+    (if(errors.nonEmpty) ("\n"+errors.map(_.report).mkString("\n")) else "")
   def details =
     simpleSummary + "\n" + results.map(_.report).mkString("\n")
 }
@@ -45,7 +45,7 @@ case class Test(name: String, command: CommandTask, reporter: ReporterTask, expe
       if(actual == expected)
         Pass(this)
       else
-        Fail(this, "expected: " + expected + " but got: " + actual)
+        Failure(this, "expected: " + expected + " but got: " + actual)
     }
     catch {
       case e: LogoException =>
@@ -61,7 +61,7 @@ sealed trait TestResult {
 case class Pass(test: Test) extends TestResult {
   def report: String = "PASS '" + test.name + "'"
 }
-case class Fail(test: Test, reason: String) extends TestResult {
+case class Failure(test: Test, reason: String) extends TestResult {
   def report: String = "FAIL '" + test.name + "' " + reason
 }
 case class Error(test: Test, e: LogoException) extends TestResult {
