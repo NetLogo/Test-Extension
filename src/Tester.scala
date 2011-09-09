@@ -1,4 +1,4 @@
-import org.nlogo.api.{ CommandTask, ReporterTask, LogoException, Context }
+import org.nlogo.api.{ CommandTask, ReporterTask, Equality, LogoException, Context }
 
 // main object
 object Tester {
@@ -42,7 +42,7 @@ case class Test(name: String, command: CommandTask, reporter: ReporterTask, expe
         setup.asInstanceOf[nvm.CommandTask].perform(context, Array())
       command.asInstanceOf[nvm.CommandTask].perform(context, Array())
       val actual = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
-      if(actual == expected)
+      if(Equality.equals(actual, expected))
         Pass(this)
       else
         Failure(this, "expected: " + expected + " but got: " + actual)
