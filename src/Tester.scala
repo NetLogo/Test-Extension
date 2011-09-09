@@ -15,8 +15,13 @@ object Tester {
   def failures = results.collect{ case t: Fail => t }
   def errors = results.collect{ case t: Error => t }
   def simpleSummary =
-    (if(failures.size + errors.size == 0) "Test Run Passed" else "Test Run Failed") + " - " +
-    "Total "+results.size+", Failed "+failures.size+", Errors "+errors.size+", Passed "+successes.size
+    "Test Run " +
+    (if(failures.isEmpty && errors.isEmpty) "Passed"
+     else "Failed") +
+    " - Total " + results.size +
+    ", Failed " + failures.size +
+    ", Errors " + errors.size +
+    ", Passed " + successes.size
   def summary =
     simpleSummary +
     (if(failures.size>0) ("\n"+failures.map(_.report).mkString("\n")) else "") +
@@ -26,32 +31,30 @@ object Tester {
 }
 
 // helpers
-case class Test(name: String, command: CommandTask, reporter: ReporterTask, expectedResult: AnyRef) {
+case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
   import org.nlogo.nvm
   def run(c: Context) = {
     val context = c.asInstanceOf[nvm.ExtensionContext].nvmContext
     val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
     try {
       workspace.clearAll()
-      Tester.setup.foreach(_.asInstanceOf[nvm.CommandTask].perform(context, Array()))
+      for(setup <- Tester.setup)
+        setup.asInstanceOf[nvm.CommandTask].perform(context, Array())
       command.asInstanceOf[nvm.CommandTask].perform(context, Array())
-      val actualResult = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
-      if(actualResult == expectedResult) pass else fail(actualResult, expectedResult)
+      val actual = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
+      if(actual == expected)
+        Pass(this)
+      else
+        Fail(this, "expected: " + expected + " but got: " + actual)
     }
     catch {
       case e: LogoException =>
-        err(e)
+        Error(this, e)
     }
   }
-  def pass =
-    Pass(this)
-  def fail(actual: Any, expected: Any) =
-    Fail(this, "expected: " + expected + " but got: " + actual)
-  def err(t: LogoException) =
-    Error(this, t)
 }
 
-trait TestResult {
+sealed trait TestResult {
   val test: Test
   def report: String
 }
