@@ -19,7 +19,6 @@ class SetupCommand extends DefaultCommand {
   override def getSyntax =
     Syntax.commandSyntax(Array(Syntax.CommandTaskType))
   def perform(args: Array[Argument], context: Context) {
-    // could possibly check to see if there is a setup method here already...
     Tester.setup = Some(args(0).getCommandTask)
   }
 }
@@ -30,7 +29,7 @@ class AddCommand extends DefaultCommand {
       Array(Syntax.StringType, Syntax.CommandTaskType,
             Syntax.ReporterTaskType, Syntax.WildcardType))
   def perform(args: Array[Argument], context: Context) {
-    Tester.addTest(
+    Tester.add(
       Test(args(0).getString,
            args(1).getCommandTask,
            args(2).getReporterTask,
@@ -58,12 +57,12 @@ class SummaryReporter extends DefaultReporter {
   override def getSyntax =
     Syntax.reporterSyntax(Syntax.StringType)
   def report(args: Array[Argument], context: Context) =
-    Tester.summary
+    Tester.results.summary
 }
 
 class DetailsReporter extends DefaultReporter {
   override def getSyntax =
     Syntax.reporterSyntax(Syntax.StringType)
   def report(args: Array[Argument], context: Context) =
-    Tester.details
+    Tester.results.details
 }

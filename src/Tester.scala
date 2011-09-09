@@ -1,23 +1,32 @@
 import org.nlogo.api.{ CommandTask, ReporterTask, Equality, LogoException, Context }
+import scala.collection.immutable.Vector
 
-// main object
 object Tester {
-  val tests = collection.mutable.ListBuffer[Test]()
+  private var tests = Vector[Test]()
+  private var _results = new Results(Nil)
+  def results = _results
   var setup: Option[CommandTask] = None
-  var results: Iterable[TestResult] = Nil
-  def addTest(t: Test) { tests += t }
+  def add(t: Test) { tests :+= t }
   def run(context: Context) {
-    results = tests.map(_.run(context))
+    _results = new Results(tests.map(_.run(context)))
   }
   def clear() {
-    tests.clear()
-    results = Nil
+    _results = new Results(Nil)
+    tests = Vector[Test]()
     setup = None
   }
-  def successes = results.collect{ case t: Pass => t }
-  def failures = results.collect{ case t: Failure => t }
-  def errors = results.collect{ case t: Error => t }
-  def simpleSummary =
+}
+
+sealed trait TestResult { def message: String }
+case class Pass(message: String) extends TestResult
+case class Failure(message: String) extends TestResult
+case class Error(message: String) extends TestResult
+
+class Results(results: Seq[TestResult]) {
+  def successes = results.collect{case p: Pass => p}
+  def failures = results.collect{case f: Failure => f}
+  def errors = results.collect{case e: Error => e}
+  def header =
     "Test Run " +
     (if(failures.isEmpty && errors.isEmpty) "Passed"
      else "Failed") +
@@ -26,11 +35,11 @@ object Tester {
     ", Errors " + errors.size +
     ", Passed " + successes.size
   def summary =
-    simpleSummary +
-    (if(failures.nonEmpty) ("\n"+failures.map(_.report).mkString("\n")) else "") +
-    (if(errors.nonEmpty) ("\n"+errors.map(_.report).mkString("\n")) else "")
+    (header +: (failures ++ errors).map(_.message))
+      .mkString("\n")
   def details =
-    simpleSummary + "\n" + results.map(_.report).mkString("\n")
+    (header +: results.map(_.message))
+      .mkString("\n")
 }
 
 // helpers
@@ -46,27 +55,13 @@ case class Test(name: String, command: CommandTask, reporter: ReporterTask, expe
       command.asInstanceOf[nvm.CommandTask].perform(context, Array())
       val actual = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
       if(Equality.equals(actual, expected))
-        Pass(this)
+        Pass("PASS '" + name + "'")
       else
-        Failure(this, "expected: " + expected + " but got: " + actual)
+        Failure("FAIL '" + name + "' " +  "expected: " + expected + " but got: " + actual)
     }
     catch {
       case e: LogoException =>
-        Error(this, e)
+        Error("ERROR '" + name + "' " + e.getMessage)
     }
   }
-}
-
-sealed trait TestResult {
-  val test: Test
-  def report: String
-}
-case class Pass(test: Test) extends TestResult {
-  def report: String = "PASS '" + test.name + "'"
-}
-case class Failure(test: Test, reason: String) extends TestResult {
-  def report: String = "FAIL '" + test.name + "' " + reason
-}
-case class Error(test: Test, e: LogoException) extends TestResult {
-  def report: String = "ERROR '" + test.name + "' " + e.getMessage
 }

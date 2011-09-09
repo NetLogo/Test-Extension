@@ -1,3 +1,7 @@
+no-results-yet
+  extensions [test]
+  test:summary => "Test Run Passed - Total 0, Failed 0, Errors 0, Passed 0"
+
 tests-are-clearable-but-dont-clear-when-run
   extensions [test]
   O> test:add "" [] [5] 5
