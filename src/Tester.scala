@@ -1,4 +1,4 @@
-import org.nlogo.api.{ CommandTask, ReporterTask, Equality, LogoException, Context }
+import org.nlogo.api.{ CommandTask, ReporterTask, Dump, Equality, LogoException, Context }
 import scala.collection.immutable.Vector
 
 object Tester {
@@ -57,7 +57,9 @@ case class Test(name: String, command: CommandTask, reporter: ReporterTask, expe
       if(Equality.equals(actual, expected))
         Pass("PASS '" + name + "'")
       else
-        Failure("FAIL '" + name + "' " +  "expected: " + expected + " but got: " + actual)
+        Failure("FAIL '" + name + "' " +
+                "expected: " + Dump.logoObject(expected) +
+                " but got: " + Dump.logoObject(actual))
     }
     catch {
       case e: LogoException =>
