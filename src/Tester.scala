@@ -11,6 +11,7 @@ object Tester {
   }
   def clear() {
     tests.clear()
+    results = Nil
     setup = None
   }
   def successes = results.collect{ case t: Pass => t }
