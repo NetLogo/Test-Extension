@@ -44,16 +44,14 @@ class Results(results: Seq[TestResult]) {
 
 // helpers
 case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
-  import org.nlogo.nvm
-  def run(c: Context): TestResult = {
-    val context = c.asInstanceOf[nvm.ExtensionContext].nvmContext
-    val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
+  def run(context: Context): TestResult = {
+    context.asInstanceOf[org.nlogo.nvm.ExtensionContext]
+      .workspace.clearAll()
     try {
-      workspace.clearAll()
       for(setup <- Tester.setup)
-        setup.asInstanceOf[nvm.CommandTask].perform(context, Array())
-      command.asInstanceOf[nvm.CommandTask].perform(context, Array())
-      val actual = reporter.asInstanceOf[nvm.ReporterTask].report(context, Array())
+        setup.perform(context, Array())
+      command.perform(context, Array())
+      val actual = reporter.report(context, Array())
       if(Equality.equals(actual, expected))
         Pass("PASS '" + name + "'")
       else
