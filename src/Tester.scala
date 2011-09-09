@@ -1,19 +1,22 @@
 import org.nlogo.api.{ CommandTask, ReporterTask, Dump, Equality, LogoException, Context }
 import scala.collection.immutable.Vector
 
-object Tester {
+class Tester {
   private var tests = Vector[Test]()
   private var _results = new Results(Nil)
   def results = _results
-  var setup: Option[CommandTask] = None
+  private val emptyTask = new CommandTask {
+    override def perform(c: Context, args: Array[AnyRef]) { }
+  }
+  var setup: CommandTask = emptyTask
   def add(t: Test) { tests :+= t }
   def run(context: Context) {
-    _results = new Results(tests.map(_.run(context)))
+    _results = new Results(tests.map(_.run(context, setup)))
   }
   def clear() {
     _results = new Results(Nil)
     tests = Vector[Test]()
-    setup = None
+    setup = emptyTask
   }
 }
 
@@ -44,10 +47,9 @@ class Results(results: Seq[TestResult]) {
 
 // helpers
 case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
-  def run(context: Context): TestResult = {
+  def run(context: Context, setup: CommandTask): TestResult = {
     try {
-      for(setup <- Tester.setup)
-        setup.perform(context, Array())
+      setup.perform(context, Array())
       command.perform(context, Array())
       val actual = reporter.report(context, Array())
       if(Equality.equals(actual, expected))
