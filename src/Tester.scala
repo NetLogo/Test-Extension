@@ -7,9 +7,12 @@ object Tester {
   var results: Iterable[TestResult] = Nil
   def addTest(t: Test) { tests += t }
   def run(context: Context) {
-    results = tests.map(t => t.run(context))
+    results = tests.map(_.run(context))
   }
-  def clear() { tests.clear(); setup = None }
+  def clear() {
+    tests.clear()
+    setup = None
+  }
   def successes = results.collect{ case t: Pass => t }
   def failures = results.collect{ case t: Failure => t }
   def errors = results.collect{ case t: Error => t }
@@ -32,7 +35,7 @@ object Tester {
 // helpers
 case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
   import org.nlogo.nvm
-  def run(c: Context) = {
+  def run(c: Context): TestResult = {
     val context = c.asInstanceOf[nvm.ExtensionContext].nvmContext
     val workspace = c.asInstanceOf[nvm.ExtensionContext].workspace
     try {
