@@ -45,7 +45,6 @@ class Results(results: Seq[TestResult]) {
       .mkString("\n")
 }
 
-// helpers
 case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
   def run(context: Context, setup: CommandTask): TestResult = {
     try {
