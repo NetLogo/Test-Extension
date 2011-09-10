@@ -7,7 +7,7 @@ class TestExtension extends DefaultClassManager {
 
   val tester = new Tester
 
-  def load(manager: PrimitiveManager) {
+  override def load(manager: PrimitiveManager) {
     manager.addPrimitive("setup", SetupCommand)
     manager.addPrimitive("add", AddCommand)
     manager.addPrimitive("run", RunCommand)
@@ -20,7 +20,7 @@ class TestExtension extends DefaultClassManager {
   object SetupCommand extends DefaultCommand {
     override def getSyntax =
       Syntax.commandSyntax(Array(Syntax.CommandTaskType))
-    def perform(args: Array[Argument], context: Context) {
+    override def perform(args: Array[Argument], context: Context) {
       tester.setup = args(0).getCommandTask
     }
   }
@@ -30,7 +30,7 @@ class TestExtension extends DefaultClassManager {
       Syntax.commandSyntax(
         Array(Syntax.StringType, Syntax.CommandTaskType,
               Syntax.ReporterTaskType, Syntax.WildcardType))
-    def perform(args: Array[Argument], context: Context) {
+    override def perform(args: Array[Argument], context: Context) {
       tester.add(
         Test(args(0).getString,
              args(1).getCommandTask,
@@ -42,7 +42,7 @@ class TestExtension extends DefaultClassManager {
   object RunCommand extends DefaultCommand {
     override def getSyntax =
       Syntax.commandSyntax()
-    def perform(args: Array[Argument], context: Context) {
+    override def perform(args: Array[Argument], context: Context) {
       tester.run(context)
     }
   }
@@ -50,7 +50,7 @@ class TestExtension extends DefaultClassManager {
   object ClearCommand extends DefaultCommand {
     override def getSyntax =
       Syntax.commandSyntax()
-    def perform(args: Array[Argument], context: Context) {
+    override def perform(args: Array[Argument], context: Context) {
       tester.clear()
     }
   }
@@ -58,14 +58,14 @@ class TestExtension extends DefaultClassManager {
   object SummaryReporter extends DefaultReporter {
     override def getSyntax =
       Syntax.reporterSyntax(Syntax.StringType)
-    def report(args: Array[Argument], context: Context) =
+    override def report(args: Array[Argument], context: Context) =
       tester.results.summary
   }
 
   object DetailsReporter extends DefaultReporter {
     override def getSyntax =
       Syntax.reporterSyntax(Syntax.StringType)
-    def report(args: Array[Argument], context: Context) =
+    override def report(args: Array[Argument], context: Context) =
       tester.results.details
   }
 
