@@ -37,6 +37,13 @@ tests-succeed
 error-in-command-task-1
   extensions [test]
   to-report zero report 0 end
-  O> test:add "create 0 turtles" [ print 1 / zero ] [ count turtles ] 0
+  O> test:add "" [ print 1 / zero ] [ count turtles ] 0
   O> test:run
-  test:summary => "Test Run Failed - Total 1, Failed 0, Errors 1, Passed 0\nERROR 'create 0 turtles' Division by zero."
+  test:summary => "Test Run Failed - Total 1, Failed 0, Errors 1, Passed 0\nERROR '' Division by zero."
+
+error-in-command-task-2
+  extensions [test]
+  to run-tests test:add "" [ print 1 / zero ] [ count turtles ] e test:run print test:summary end
+  to-report zero report 0 end
+  O> run-tests
+  test:summary => "Test Run Failed - Total 1, Failed 0, Errors 1, Passed 0\nERROR '' Division by zero."
