@@ -16,6 +16,10 @@ class TestExtension extends DefaultClassManager {
     manager.addPrimitive("details", DetailsReporter)
   }
 
+  override def clearAll() {
+    tester.clear()
+  }
+
   // primitives
   object SetupCommand extends DefaultCommand {
     override def getSyntax =
