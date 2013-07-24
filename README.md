@@ -1,6 +1,10 @@
 # NetLogo test extension
 
-This package contains the NetLogo test extension, which lets you define and run unit tests for NetLogo code.
+This package contains the NetLogo extension called `test`, which lets you define and run unit tests for NetLogo code.
+
+## Status
+
+Probably abandoned (at least as of July 2013)
 
 ## Using
 
@@ -8,9 +12,9 @@ TODO
 
 ## Building
 
-Use the NETLOGO environment variable to point to your NetLogo directory (containing NetLogo.jar) and SCALA_HOME to point to your Scala 2.9.1 installation.  For example:
+Use the NETLOGO environment variable to point to your NetLogo directory (containing NetLogo.jar) and SCALA_HOME to point to your Scala 2.9.2 installation.  For example:
 
-    NETLOGO=/Applications/NetLogo\\\ 5.0 SCALA_HOME=/usr/local/scala-2.9.1.final make
+    NETLOGO=/Applications/NetLogo\\\ 5.0.4 SCALA_HOME=/usr/local/scala-2.9.2 make
 
 If compilation succeeds, `test.jar` will be created.
 
