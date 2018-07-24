@@ -1,6 +1,7 @@
 import org.nlogo.api.{ DefaultClassManager, PrimitiveManager,
-                       DefaultCommand, DefaultReporter,
-                       Syntax, Context, Argument, LogoException }
+                       Command, Reporter,
+                       Context, Argument, LogoException }
+import org.nlogo.core.Syntax
 
 // extension
 class TestExtension extends DefaultClassManager {
@@ -21,29 +22,27 @@ class TestExtension extends DefaultClassManager {
   }
 
   // primitives
-  object SetupCommand extends DefaultCommand {
+  object SetupCommand extends Command {
     override def getSyntax =
-      Syntax.commandSyntax(Array(Syntax.CommandTaskType))
+      Syntax.commandSyntax(List(Syntax.CommandType))
     override def perform(args: Array[Argument], context: Context) {
-      tester.setup = args(0).getCommandTask
+      tester.setup = args(0).getCommand
     }
   }
 
-  object AddCommand extends DefaultCommand {
+  object AddCommand extends Command {
     override def getSyntax =
-      Syntax.commandSyntax(
-        Array(Syntax.StringType, Syntax.CommandTaskType,
-              Syntax.ReporterTaskType, Syntax.WildcardType))
+      Syntax.commandSyntax(List(Syntax.StringType, Syntax.CommandType, Syntax.ReporterType, Syntax.WildcardType))
     override def perform(args: Array[Argument], context: Context) {
       tester.add(
         Test(args(0).getString,
-             args(1).getCommandTask,
-             args(2).getReporterTask,
+             args(1).getCommand,
+             args(2).getReporter,
              args(3).get))
     }
   }
 
-  object RunCommand extends DefaultCommand {
+  object RunCommand extends Command {
     override def getSyntax =
       Syntax.commandSyntax()
     override def perform(args: Array[Argument], context: Context) {
@@ -51,7 +50,7 @@ class TestExtension extends DefaultClassManager {
     }
   }
 
-  object ClearCommand extends DefaultCommand {
+  object ClearCommand extends Command {
     override def getSyntax =
       Syntax.commandSyntax()
     override def perform(args: Array[Argument], context: Context) {
@@ -59,16 +58,16 @@ class TestExtension extends DefaultClassManager {
     }
   }
 
-  object SummaryReporter extends DefaultReporter {
+  object SummaryReporter extends Reporter {
     override def getSyntax =
-      Syntax.reporterSyntax(Syntax.StringType)
+      Syntax.reporterSyntax(ret = Syntax.StringType)
     override def report(args: Array[Argument], context: Context) =
       tester.results.summary
   }
 
-  object DetailsReporter extends DefaultReporter {
+  object DetailsReporter extends Reporter {
     override def getSyntax =
-      Syntax.reporterSyntax(Syntax.StringType)
+      Syntax.reporterSyntax(ret = Syntax.StringType)
     override def report(args: Array[Argument], context: Context) =
       tester.results.details
   }

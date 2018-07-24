@@ -1,14 +1,16 @@
-import org.nlogo.api.{ CommandTask, ReporterTask, Dump, Equality, LogoException, Context }
+import org.nlogo.api.{ AnonymousCommand, AnonymousReporter, Dump, Equality, LogoException, Context }
+import org.nlogo.core.Syntax
 import scala.collection.immutable.Vector
 
 class Tester {
   private var tests = Vector[Test]()
   private var _results = new Results(Nil)
   def results = _results
-  private val emptyTask = new CommandTask {
+  private val emptyTask = new AnonymousCommand {
+    override def syntax = Syntax.commandSyntax()
     override def perform(c: Context, args: Array[AnyRef]) { }
   }
-  var setup: CommandTask = emptyTask
+  var setup: AnonymousCommand = emptyTask
   def add(t: Test) { tests :+= t }
   def run(context: Context) {
     _results = new Results(tests.map(_.run(context, setup)))
@@ -45,8 +47,8 @@ class Results(results: Seq[TestResult]) {
       .mkString("\n")
 }
 
-case class Test(name: String, command: CommandTask, reporter: ReporterTask, expected: AnyRef) {
-  def run(context: Context, setup: CommandTask): TestResult = {
+case class Test(name: String, command: AnonymousCommand, reporter: AnonymousReporter, expected: AnyRef) {
+  def run(context: Context, setup: AnonymousCommand): TestResult = {
     try {
       setup.perform(context, Array())
       command.perform(context, Array())
