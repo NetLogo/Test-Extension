@@ -1,3 +1,5 @@
+package org.nlogo.extensions.test
+
 import org.nlogo.api.{ AnonymousCommand, AnonymousReporter, Dump, Equality, LogoException, Context }
 import org.nlogo.core.Syntax
 import scala.collection.immutable.Vector

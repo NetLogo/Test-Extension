@@ -1,4 +1,5 @@
 /classes
 target/
-/test.jar
-/test.zip
+*.jar
+*.zip
+.bundledFiles

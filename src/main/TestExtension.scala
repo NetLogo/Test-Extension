@@ -1,3 +1,5 @@
+package org.nlogo.extensions.test
+
 import org.nlogo.api.{ DefaultClassManager, PrimitiveManager,
                        Command, Reporter,
                        Context, Argument, LogoException }
